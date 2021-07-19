@@ -1,4 +1,4 @@
-module github.com/bilibili/net/pool
+module github.com/go-kiss/net/pool
 
 go 1.12
 
