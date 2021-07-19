@@ -163,7 +163,7 @@ func (p *ConnPool) newConn(ctx context.Context, pooled bool) (*Conn, error) {
 	if err != nil {
 		p.setLastDialError(err)
 		if atomic.AddUint32(&p.dialErrorsNum, 1) == uint32(p.opt.PoolSize) {
-			go p.tryDial(ctx)
+			go p.tryDial()
 		}
 		return nil, err
 	}
@@ -173,13 +173,13 @@ func (p *ConnPool) newConn(ctx context.Context, pooled bool) (*Conn, error) {
 	return cn, nil
 }
 
-func (p *ConnPool) tryDial(ctx context.Context) {
+func (p *ConnPool) tryDial() {
 	for {
 		if p.closed() {
 			return
 		}
 
-		conn, err := p.opt.Dialer(ctx)
+		conn, err := p.opt.Dialer(context.Background())
 		if err != nil {
 			p.setLastDialError(err)
 			time.Sleep(time.Second)
